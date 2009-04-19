@@ -6,10 +6,10 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |s|
     s.name = "multi_table_inheritance"
-    s.summary = %Q{TODO}
-    s.email = "justin@geni.com"
+    s.summary = %Q{Add multi-table inheritance support to Rails using Postgres inheritance}
+    s.email = "code@justinbalthrop.com"
     s.homepage = "http://github.com/ninjudd/multi_table_inheritance"
-    s.description = "TODO"
+    s.description = "Add multi-table inheritance support to Rails using Postgres inheritance"
     s.authors = ["Justin Balthrop"]
   end
 rescue LoadError

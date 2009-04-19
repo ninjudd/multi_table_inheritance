@@ -1,0 +1,49 @@
+= RecordCache
+
+Add multi-table inheritance support to Rails using Postgres inheritance. For more
+information on Postgres inheritance, see http://www.postgresql.org/docs/8.3/static/ddl-inherit.html.
+
+== Usage:
+
+Assuming you have a base table migration like this:
+
+  class CreatePetsTable < ActiveRecord::Migration
+    def self.up
+      create_table :pets, :inherits_from => :profiles do |t|
+        t.string :name,    :limit => 64
+        t.string :species, :limit => 64
+        t.timestamps
+      end
+    end
+  end
+
+You can create an inherited table using the :inherits_from option:
+
+  class CreateDogsTable < ActiveRecord::Migration
+    def self.up
+      create_table :dogs, :inherits_from => :pets do |t|
+        t.string :breed, :limit => 64
+      end
+      ##
+      # Executes the following in postgres:
+      # CREATE TABLE dogs (
+      #   "breed" character varying(64) DEFAULT NULL NULL
+      # ) INHERITS (profiles)
+    end
+  end
+
+The inherited table has all the columns of the base table in addition to any fields added
+in the migration. You just need to add a model for the inherited table and add the
+multi_table_inheritance directive:
+
+  class Dog < Pet
+    multi_table_inheritance
+  end
+
+== Install:
+
+  sudo gem install ninjudd-multi_table_inheritance -s http://gems.github.com
+
+== License:
+
+Copyright (c) 2009 Justin Balthrop, Geni.com; Published under The MIT License, see LICENSE
