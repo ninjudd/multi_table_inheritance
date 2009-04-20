@@ -17,7 +17,7 @@ Assuming you have a base table migration like this:
     end
   end
 
-You can create an inherited table using the :inherits_from option:
+You can create an inherited table using the :inherits_from option.
 
   class CreateDogsTable < ActiveRecord::Migration
     def self.up
@@ -33,12 +33,40 @@ You can create an inherited table using the :inherits_from option:
   end
 
 The inherited table has all the columns of the base table in addition to any fields added
-in the migration. You just need to add a model for the inherited table and add the
-multi_table_inheritance directive:
+in the migration. You just need to add a model for the inherited table and use the
+multi_table_inheritance directive.
 
   class Dog < Pet
     multi_table_inheritance
   end
+
+You can find inherited models through the base class, and they will be of the inherited
+type, just like with single-table inheritance. However, by default, when you find
+inherited models through the base class, all attributes added in just the inherited table
+will be missing. Single-table inheritance does not have this problem because all
+attributes exist in all classes in the hierarchy.
+
+  Pet.find(11)
+  => #<Dog:0x19840f8 @attributes={"id"=>11, "name"=>"Daisy", "species"=>"Dog"}
+
+  Dog.find(11)
+  => #<Dog:0x1938284 @attributes={"id"=>11, "name"=>"Daisy", "species"=>"Dog", "breed"=>"Pit/Lab Mix"}
+
+
+If you would like inherited attributes to be added the inherited models when finding from
+the base class, use the :add_fields option.
+
+  class Dog < Pet
+    multi_table_inheritance :add_fields => true
+  end
+
+  Pet.find(11)
+  => #<Dog:0x1938284 @attributes={"id"=>11, "name"=>"Daisy", "species"=>"Dog", "breed"=>"Pit/Lab Mix"}
+
+
+This may have performance implications for you, because it fetches the record again from
+the inherited table. However, if you are using a model caching system (e.g. http://github.com/ninjudd/record_cache),
+the impact should be minimal.
 
 == Install:
 
