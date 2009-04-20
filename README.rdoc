@@ -72,6 +72,26 @@ the impact should be minimal.
 
   sudo gem install ninjudd-multi_table_inheritance -s http://gems.github.com
 
+== Compatibility:
+
+Requires Rails 2.3 because multi_table_inheritance overrides the default_select method in
+ActiveRecord::Base. Or alternatively, you can apply the following patch to
+construct_finder_sql in activerecord/lib/active_record/base.rb:
+
+  +        def default_select(qualified)
+  +          if qualified
+  +            quoted_table_name + '.*'
+  +          else
+  +            '*'
+  +          end
+  +        end
+  +
+           def construct_finder_sql(options)
+             scope = scope(:find)
+  -          sql  = "SELECT #{options[:select] || (scope && scope[:select]) || (options[:joins] && quoted_table_name + '.*') || '*'} "
+  +          sql  = "SELECT #{options[:select] || (scope && scope[:select]) || default_select(options[:joins] || (scope && scope[:joins]))} "
+             sql << "FROM #{(scope && scope[:from]) || options[:from] || quoted_table_name} "
+
 == License:
 
 Copyright (c) 2009 Justin Balthrop, Geni.com; Published under The MIT License, see LICENSE
